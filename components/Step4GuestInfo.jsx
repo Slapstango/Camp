@@ -3,6 +3,8 @@ import { useState } from 'react';
 const cabinSites = ['C8', 'C9', '76'];
 
 export default function Step4GuestInfo({ reservation, setReservation, nextStep, prevStep }) {
+  console.log('Reservation in Step4:', reservation);
+  console.log('SiteId type:', typeof reservation.siteId, reservation.siteId);
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -12,11 +14,6 @@ export default function Step4GuestInfo({ reservation, setReservation, nextStep, 
 
   const validateAndProceed = () => {
     const { siteId, stayType } = reservation;
-
-    if (!siteId || !stayType) {
-      setError("Please select a site and a stay type.");
-      return;
-    }
 
     const isCabin = cabinSites.includes(siteId);
     const isCabinStay = stayType === 'Cabin';
@@ -36,7 +33,7 @@ export default function Step4GuestInfo({ reservation, setReservation, nextStep, 
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">Step 4: Guest Info</h2>
+      <h2 className=\"text-xl font-bold mb-4\">Step 4: Guest Info for site {String(reservation.siteId)}</h2>
       <label>
         Name:
         <input type="text" name="primaryName" value={reservation.primaryName} onChange={handleChange} className="block border p-1 my-2 w-full" />
