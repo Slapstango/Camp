@@ -13,6 +13,11 @@ export default function Step4GuestInfo({ reservation, setReservation, nextStep, 
   const validateAndProceed = () => {
     const { siteId, stayType } = reservation;
 
+    if (!siteId || !stayType) {
+      setError("Please select a site and a stay type.");
+      return;
+    }
+
     const isCabin = cabinSites.includes(siteId);
     const isCabinStay = stayType === 'Cabin';
 
