@@ -54,11 +54,11 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
             <div className="w-full md:w-1/2">
               <h3 className="text-lg font-semibold mb-2">Campground Map (Reference Only):</h3>
               <img src="/campground-map.png" alt="Campground Map" className="w-full border" />
-            )) : <p className="text-red-600">No available sites for these dates.</p>}</div>
+            )) ) : (<p className="text-red-600">No available sites for these dates.</p>)}
             <div className="w-full md:w-1/2">
               <h3 className="text-lg font-semibold mb-2">Available Options:</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 border border-red-500 p-2">
-                {availableSites.length > 0 ? availableSites.map(site => (
+                {availableSites.length > 0 ? (availableSites.map(site => (
                   <button
                     key={site}
                     onClick={() => setSelectedSite(site)}
