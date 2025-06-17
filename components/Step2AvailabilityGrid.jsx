@@ -1,8 +1,8 @@
 import { useEffect, useState, Fragment } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import supabase from '../lib/supabaseClient';
 import CalendarGrid from './CalendarGrid';
 
-const supabase = createClient(
+// Supabase client moved to shared module
   'https://bwjihwxkudaojlnqvyux.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' // replace with your actual anon key
 );
