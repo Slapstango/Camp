@@ -16,12 +16,12 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
   }, [reservation.startDate, reservation.endDate]);
 
   const fetchAvailableSites = async () => {
-    console.log('Querying availability with:', reservation.startDate, reservation.endDate);
     setLoading(true);
     const { data, error } = await supabase
       .from('reservations')
       .select('site_id, start_date, end_date')
-      .lte('start_date', reservation.endDate).gte('end_date', reservation.startDate);
+      .lte('start_date', reservation.endDate)
+      .gte('end_date', reservation.startDate);
 
     if (error) {
       console.error("Error fetching reservations:", error.message);
@@ -32,8 +32,6 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
 
     const reserved = new Set(data.map(r => r.site_id));
     const filtered = reservableSites.filter(site => !reserved.has(site));
-    console.log('Reserved sites:', Array.from(reserved));
-    console.log('Available sites:', filtered);
     setAvailableSites(filtered);
     setLoading(false);
   };
@@ -54,19 +52,23 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
             <div className="w-full md:w-1/2">
               <h3 className="text-lg font-semibold mb-2">Campground Map (Reference Only):</h3>
               <img src="/campground-map.png" alt="Campground Map" className="w-full border" />
-            )) : <p className="text-red-600">No available sites for these dates.</p>}
+            </div>
             <div className="w-full md:w-1/2">
               <h3 className="text-lg font-semibold mb-2">Available Options:</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 border border-red-500 p-2">
-                {availableSites.length > 0 ? (availableSites.map(site => (
-                  <button
-                    key={site}
-                    onClick={() => setSelectedSite(site)}
-                    className={`p-2 rounded border ${selectedSite === site ? 'bg-blue-400 text-white' : 'bg-green-200 hover:bg-green-300'}`}
-                  >
-                    {site}
-                  </button>
-                ))}
+                {availableSites.length > 0 ? (
+                  availableSites.map(site => (
+                    <button
+                      key={site}
+                      onClick={() => setSelectedSite(site)}
+                      className={\`p-2 rounded border \${selectedSite === site ? 'bg-blue-400 text-white' : 'bg-green-200 hover:bg-green-300'}\`}
+                    >
+                      {site}
+                    </button>
+                  ))
+                ) : (
+                  <p className="text-red-600 col-span-full">No available sites for these dates.</p>
+                )}
               </div>
               <button
                 onClick={handleSelect}
