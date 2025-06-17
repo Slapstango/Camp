@@ -1,27 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { format, addDays } from 'date-fns';
 import supabase from '../../lib/supabaseClient';
 import CalendarGrid from '../../components/CalendarGrid';
+import { format, addDays } from 'date-fns';
 
 export default function AdminPage() {
   const router = useRouter();
+  const [session, setSession] = useState(undefined);
   const [search, setSearch] = useState('');
   const [results, setResults] = useState([]);
   const [displayCount, setDisplayCount] = useState(10);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Auth guard
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session || session.user.user_metadata?.role !== 'admin') {
+        router.replace('/admin/login');
+      } else {
+        setSession(session);
+      }
+    });
+  }, []);
+
+  if (session === undefined) {
+    return <p className="p-8">Checking authentication...</p>;
+  }
+
   const today = new Date();
   const startDate = format(today, 'yyyy-MM-dd');
   const endDate = format(addDays(today, 6), 'yyyy-MM-dd');
-
-  useEffect(() => {
-    if (!supabase || typeof supabase.from !== 'function') {
-      console.error('Supabase client not initialized', supabase);
-      setError('Database connection error');
-    }
-  }, []);
 
   const handleSearch = async () => {
     setLoading(true);
@@ -80,8 +89,7 @@ export default function AdminPage() {
       </div>
 
       {error && <p className="text-red-600 mb-4">{error}</p>}
-
-      {/* Placeholder for future results table or other content */}
+      {/* Results table code */}
     </div>
   );
 }
