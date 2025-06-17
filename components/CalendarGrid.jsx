@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 import supabase from '../lib/supabaseClient';
 import { format, addDays } from 'date-fns';
 
@@ -8,8 +7,7 @@ const reservableSites = [
   '17M','18M','19M','C8','C9','76'
 ];
 
-export default function CalendarGrid({ startDate, endDate }) {
-  const router = useRouter();
+export default function CalendarGrid({ startDate, endDate, onView }) {
   const [reservations, setReservations] = useState([]);
 
   useEffect(() => {
@@ -63,10 +61,10 @@ export default function CalendarGrid({ startDate, endDate }) {
                 const cellClass = resObj ? 'bg-red-200' : 'bg-green-100';
                 return (
                   <td key={idx} className={`border px-2 py-1 ${cellClass}`}>
-                    {resObj && (
+                    {resObj && onView && (
                       <button
                         className="text-sm text-blue-600 hover:underline"
-                        onClick={() => router.push(`/admin/edit?id=${resObj.id}`)}
+                        onClick={() => onView(resObj.id)}
                       >
                         View
                       </button>
@@ -79,5 +77,5 @@ export default function CalendarGrid({ startDate, endDate }) {
         </tbody>
       </table>
     </div>
-  );
+);
 }
