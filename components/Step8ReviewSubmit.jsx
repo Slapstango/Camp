@@ -28,26 +28,19 @@ export default function Step8ReviewSubmit({ reservation, prevStep }) {
         .select('id');
 
       if (resError) throw resError;
-      const reservationId = resData[0].id;
 
       if (reservation.guests.length > 0) {
         const { error: guestsError } = await supabase
           .from('guests')
           .insert(
             reservation.guests.map(g => ({
-              reservation_id: reservationId,
+              reservation_id: resData[0].id,
               name:           g.name,
               age:            Number(g.age)
             }))
           );
         if (guestsError) throw guestsError;
       }
-
-      fetch('/api/sendConfirmation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reservation, reservationId })
-      }).catch(err => console.error('Email API error:', err));
 
       setSuccess(true);
     } catch (err) {
