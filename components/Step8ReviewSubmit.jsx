@@ -1,18 +1,16 @@
-// components/Step8ReviewSubmit.jsx
 import { useState } from 'react';
 import supabase from '../lib/supabaseClient';
 
 export default function Step8ReviewSubmit({ reservation, prevStep }) {
   const [submitting, setSubmitting] = useState(false);
-  const [success,    setSuccess]    = useState(false);
-  const [error,      setError]      = useState('');
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async () => {
     setSubmitting(true);
     setError('');
 
     try {
-      // 1) Insert reservation & return its new ID
       const { data: resData, error: resError } = await supabase
         .from('reservations')
         .insert([{
@@ -27,13 +25,12 @@ export default function Step8ReviewSubmit({ reservation, prevStep }) {
           unit_length:  reservation.unitLength ? Number(reservation.unitLength) : null,
           guest_count:  reservation.guests.length
         }])
-        .select('id');   // ← important: return the new row's ID
+        .select('id');
 
       if (resError) throw resError;
       const reservationId = resData[0].id;
 
-      // 2) Insert any additional guests
-      if (reservation.guests.length) {
+      if (reservation.guests.length > 0) {
         const { error: guestsError } = await supabase
           .from('guests')
           .insert(
@@ -46,6 +43,12 @@ export default function Step8ReviewSubmit({ reservation, prevStep }) {
         if (guestsError) throw guestsError;
       }
 
+      fetch('/api/sendConfirmation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reservation, reservationId })
+      }).catch(err => console.error('Email API error:', err));
+
       setSuccess(true);
     } catch (err) {
       setError(err.message);
@@ -54,7 +57,6 @@ export default function Step8ReviewSubmit({ reservation, prevStep }) {
     }
   };
 
-  // On success, show full summary
   if (success) {
     return (
       <div className="p-4 bg-green-50 rounded space-y-3">
@@ -64,16 +66,13 @@ export default function Step8ReviewSubmit({ reservation, prevStep }) {
           <li><strong>Dates:</strong> {reservation.startDate} → {reservation.endDate}</li>
           <li><strong>Primary Guest:</strong> {reservation.primaryName} ({reservation.age} yrs)</li>
           <li><strong>Contact:</strong> {reservation.phone}, {reservation.email}</li>
-          <li>
-            <strong>Stay Type:</strong> {reservation.stayType}
-            {reservation.unitLength && <> ({reservation.unitLength} ft)</>}
-          </li>
+          <li><strong>Stay Type:</strong> {reservation.stayType}{reservation.unitLength ? ` (${reservation.unitLength} ft)` : ''}</li>
           {reservation.guests.length > 0 && (
             <li>
               <strong>Additional Guests:</strong>
               <ul className="list-decimal list-inside ml-4">
-                {reservation.guests.map((g, i) => (
-                  <li key={i}>{g.name} ({g.age} yrs)</li>
+                {reservation.guests.map((g, idx) => (
+                  <li key={idx}>{g.name} ({g.age} yrs)</li>
                 ))}
               </ul>
             </li>
@@ -83,46 +82,35 @@ export default function Step8ReviewSubmit({ reservation, prevStep }) {
     );
   }
 
-  // Otherwise, show the review & submit form
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-bold">Review Your Reservation</h2>
       <ul className="list-disc list-inside space-y-1">
         <li><strong>Site:</strong> {reservation.siteId}</li>
         <li><strong>Dates:</strong> {reservation.startDate} → {reservation.endDate}</li>
-        <li><strong>Primary Guest:</strong> {reservation.primaryName} ({reservation.age} yrs)</li>
+        <li><strong>Name:</strong> {reservation.primaryName} ({reservation.age} yrs)</li>
         <li><strong>Contact:</strong> {reservation.phone}, {reservation.email}</li>
-        <li>
-          <strong>Stay Type:</strong> {reservation.stayType}
-          {reservation.unitLength && <> ({reservation.unitLength} ft)</>}
-        </li>
+        <li><strong>Stay Type:</strong> {reservation.stayType}{reservation.unitLength ? ` (${reservation.unitLength} ft)` : ''}</li>
         {reservation.guests.length > 0 && (
           <li>
             <strong>Additional Guests:</strong>
             <ul className="list-decimal list-inside ml-4">
-              {reservation.guests.map((g, i) => (
-                <li key={i}>{g.name} ({g.age} yrs)</li>
+              {reservation.guests.map((g, idx) => (
+                <li key={idx}>{g.name} ({g.age} yrs)</li>
               ))}
             </ul>
           </li>
         )}
       </ul>
-
+      <p className="text-yellow-600 font-medium">
+        Please register at the office and pay upon arrival.
+      </p>
       {error && <p className="text-red-600">Error: {error}</p>}
-
       <div className="flex space-x-2">
-        <button
-          onClick={prevStep}
-          disabled={submitting}
-          className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-        >
+        <button onClick={prevStep} disabled={submitting} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
           Back
         </button>
-        <button
-          onClick={handleSubmit}
-          disabled={submitting}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-        >
+        <button onClick={handleSubmit} disabled={submitting} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
           {submitting ? 'Submitting…' : 'Confirm Reservation'}
         </button>
       </div>
