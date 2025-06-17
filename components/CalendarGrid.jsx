@@ -1,26 +1,28 @@
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import supabase from '../lib/supabaseClient';
 import { format, addDays } from 'date-fns';
 
-const reservableSites = ['1M', '2M', '3M', '4M', '5M', '6M', '7M', '17M', '18M', '19M', 'C8', 'C9', '76'];
+const reservableSites = [
+  '1M','2M','3M','4M','5M','6M','7M',
+  '17M','18M','19M','C8','C9','76'
+];
 
 export default function CalendarGrid({ startDate, endDate }) {
+  const router = useRouter();
   const [reservations, setReservations] = useState([]);
 
   useEffect(() => {
     if (startDate && endDate) {
-      fetchReservations();
+      (async () => {
+        const { data, error } = await supabase
+          .from('reservations')
+          .select('id, site_id, start_date, end_date');
+        if (error) console.error('Error loading reservations', error);
+        else setReservations(data);
+      })();
     }
   }, [startDate, endDate]);
-
-  const fetchReservations = async () => {
-    const { data, error } = await supabase
-      .from('reservations')
-      .select('site_id, start_date, end_date');
-
-    if (!error) setReservations(data);
-    else console.error("Error loading reservations", error);
-  };
 
   const getDates = () => {
     const dates = [];
@@ -33,18 +35,10 @@ export default function CalendarGrid({ startDate, endDate }) {
     return dates;
   };
 
-  const isReserved = (site, date) => {
-    return reservations.some(r => {
-      return r.site_id === site &&
-        new Date(r.start_date) <= date &&
-        new Date(r.end_date) >= date;
-    });
-  };
-
   const dates = getDates();
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto mb-4">
       <table className="table-auto border-collapse w-full text-sm">
         <thead>
           <tr>
@@ -60,11 +54,26 @@ export default function CalendarGrid({ startDate, endDate }) {
           {reservableSites.map(site => (
             <tr key={site}>
               <td className="border px-2 py-1 font-bold">{site}</td>
-              {dates.map((date, idx) => (
-                <td key={idx} className={`border px-2 py-1 ${isReserved(site, date) ? 'bg-red-200' : 'bg-green-100'}`}>
-                  {isReserved(site, date) ? 'X' : '✓'}
-                </td>
-              ))}
+              {dates.map((date, idx) => {
+                const resObj = reservations.find(r =>
+                  r.site_id === site &&
+                  new Date(r.start_date) <= date &&
+                  new Date(r.end_date) >= date
+                );
+                const cellClass = resObj ? 'bg-red-200' : 'bg-green-100';
+                return (
+                  <td key={idx} className={`border px-2 py-1 ${cellClass}`}>
+                    {resObj && (
+                      <button
+                        className="text-sm text-blue-600 hover:underline"
+                        onClick={() => router.push(`/admin/edit?id=${resObj.id}`)}
+                      >
+                        View
+                      </button>
+                    )}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>

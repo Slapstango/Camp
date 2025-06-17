@@ -12,7 +12,6 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Next 7 days for dashboard
   const today = new Date();
   const startDate = format(today, 'yyyy-MM-dd');
   const endDate = format(addDays(today, 6), 'yyyy-MM-dd');
@@ -29,7 +28,6 @@ export default function AdminPage() {
     setError('');
     setDisplayCount(10);
     const term = '%' + search.trim() + '%';
-
     try {
       const { data, error: fetchError } = await supabase
         .from('reservations')
@@ -51,14 +49,18 @@ export default function AdminPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
-
-      {/* Availability Dashboard */}
-      <div className="mb-8">
-        <CalendarGrid startDate={startDate} endDate={endDate} />
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+        <button
+          onClick={() => router.push('/')}
+          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        >
+          + Create Reservation
+        </button>
       </div>
 
-      {/* Search Bar */}
+      <CalendarGrid startDate={startDate} endDate={endDate} />
+
       <div className="flex mb-4">
         <input
           type="text"
@@ -78,69 +80,6 @@ export default function AdminPage() {
       </div>
 
       {error && <p className="text-red-600 mb-4">{error}</p>}
-
-      {/* Search Results (paginated) */}
-      {results.length > 0 && (
-        <div className="overflow-x-auto">
-          <table className="w-full table-auto border-collapse">
-            <thead>
-              <tr>
-                <th className="border p-2">Dates</th>
-                <th className="border p-2">Site</th>
-                <th className="border p-2">Primary Guest</th>
-                <th className="border p-2">Age</th>
-                <th className="border p-2">Email</th>
-                <th className="border p-2">Phone</th>
-                <th className="border p-2">Stay Type</th>
-                <th className="border p-2">Guests</th>
-                <th className="border p-2">Guest Ages</th>
-                <th className="border p-2">Payment</th>
-                <th className="border p-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.slice(0, displayCount).map(r => (
-                <tr key={r.id} className="hover:bg-gray-50">
-                  <td className="border p-2">{r.start_date} → {r.end_date}</td>
-                  <td className="border p-2">{r.site_id}</td>
-                  <td className="border p-2">{r.primary_name}</td>
-                  <td className="border p-2">{r.age}</td>
-                  <td className="border p-2">{r.email}</td>
-                  <td className="border p-2">{r.phone}</td>
-                  <td className="border p-2">
-                    {r.stay_type}{r.unit_length ? ' (' + r.unit_length + ' ft)' : ''}
-                  </td>
-                  <td className="border p-2">{r.guests.map(g => g.name).join(', ')}</td>
-                  <td className="border p-2">{r.guests.map(g => g.age).join(', ')}</td>
-                  <td className="border p-2">
-                    {r.payment_collected ? 'Paid $' + r.amount_paid : 'Unpaid'}
-                  </td>
-                  <td className="border p-2 space-x-2">
-                    <button
-                      onClick={() => router.push('/admin/edit?id=' + r.id)}
-                      className="px-2 py-1 bg-yellow-400 rounded hover:bg-yellow-500"
-                    >
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {results.length > displayCount && (
-            <button
-              onClick={() => setDisplayCount(displayCount + 10)}
-              className="mt-2 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-            >
-              Load More
-            </button>
-          )}
-        </div>
-      )}
-
-      {results.length === 0 && !loading && (
-        <p className="text-gray-600">No results to display.</p>
-      )}
+      {/* Further results table here */}
     </div>
-  );
 }
