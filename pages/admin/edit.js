@@ -76,7 +76,7 @@ export default function EditReservationPage() {
   const handleSave = async () => {
     setSaving(true);
     setMessage('');
-    
+
     // Update reservation
     await supabase
       .from('reservations')
@@ -234,24 +234,18 @@ export default function EditReservationPage() {
                 onChange={e => handleGuestChange(idx, 'age', e.target.value)}
                 className="border p-1 w-20"
               />
-              {reservation.guests.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeGuest(idx)}
-                  className="px-2 py-1 bg-red-500 text-white rounded"
-                >
-                  Remove
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => removeGuest(idx)}
+                className="px-2 py-1 bg-red-500 text-white rounded"
+              >Remove</button>
             </div>
           ))}
           <button
             type="button"
             onClick={addGuest}
             className="mt-2 px-4 py-2 bg-green-600 text-white rounded"
-          >
-            Add Guest
-          </button>
+          >Add Guest</button>
         </div>
         {/* Save & Back */}
         <div className="mt-4 flex gap-2">
@@ -265,12 +259,9 @@ export default function EditReservationPage() {
           <button
             onClick={() => router.push('/admin')}
             className="px-4 py-2 bg-gray-500 text-white rounded"
-          >
-            Back to Dashboard
-          </button>
+          >Back to Dashboard</button>
         </div>
       </div>
     </div>
   );
 }
-```
