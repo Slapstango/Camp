@@ -1,13 +1,24 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import supabase from '../../lib/supabaseClient';
 
 export default function EditReservationPage() {
   const router = useRouter();
   const { id } = router.query;
-  const [session, setSession] = useState(undefined);
 
-  // Auth guard
+  // **1) Hook definitions at top level**  
+  const [session, setSession] = useState(null);
+  const [reservation, setReservation] = useState({
+    siteId: '', startDate: '', endDate: '',
+    primaryName: '', age: '', email: '', phone: '',
+    stayType: '', unitLength: '', guests: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
+  // **2) Auth guard**  
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session || session.user.user_metadata?.role !== 'admin') {
@@ -16,32 +27,11 @@ export default function EditReservationPage() {
         setSession(session);
       }
     });
-  }, []);
+  }, [router]);
 
-  if (session === undefined) {
-    return <p className="p-8">Checking authentication...</p>;
-  }
-
-  const [reservation, setReservation] = useState({
-    siteId: '',
-    startDate: '',
-    endDate: '',
-    primaryName: '',
-    age: '',
-    email: '',
-    phone: '',
-    stayType: '',
-    unitLength: '',
-    guests: []
-  });
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-
-  // Fetch existing reservation
+  // **3) Fetch reservation once auth & router are ready**  
   useEffect(() => {
-    if (!id) return;
+    if (!router.isReady || !session) return;
     (async () => {
       const { data, error } = await supabase
         .from('reservations')
@@ -66,37 +56,32 @@ export default function EditReservationPage() {
       }
       setLoading(false);
     })();
-  }, [id]);
+  }, [router.isReady, session, id]);
 
+  // **4) Handlers**  
   const handleChange = (field, value) =>
     setReservation(prev => ({ ...prev, [field]: value }));
 
   const handleGuestChange = (i, field, value) => {
-    const list = [...reservation.guests];
-    list[i][field] = value;
-    setReservation(prev => ({ ...prev, guests: list }));
+    setReservation(prev => {
+      const guests = [...prev.guests];
+      guests[i][field] = value;
+      return { ...prev, guests };
+    });
   };
 
-  const addGuest = () => {
-    setReservation(prev => ({
-      ...prev,
-      guests: [...prev.guests, { name: '', age: '' }]
-    }));
-  };
+  const addGuest = () =>
+    setReservation(prev => ({ ...prev, guests: [...prev.guests, { name: '', age: '' }] }));
 
-  const removeGuest = idx => {
-    setReservation(prev => ({
-      ...prev,
-      guests: prev.guests.filter((_, i) => i !== idx)
-    }));
-  };
+  const removeGuest = i =>
+    setReservation(prev => ({ ...prev, guests: prev.guests.filter((_, idx) => idx !== i) }));
 
   const handleSave = async () => {
     setSaving(true);
     setError('');
     try {
-      // Update main record
-      const { error: updateError } = await supabase
+      // Update main reservation
+      await supabase
         .from('reservations')
         .update({
           site_id: reservation.siteId,
@@ -107,45 +92,44 @@ export default function EditReservationPage() {
           email: reservation.email,
           phone: reservation.phone,
           stay_type: reservation.stayType,
-          unit_length: reservation.unitLength
-            ? Number(reservation.unitLength)
-            : null,
+          unit_length: reservation.unitLength ? Number(reservation.unitLength) : null,
           guest_count: reservation.guests.length
         })
         .eq('id', id);
-      if (updateError) throw updateError;
 
       // Replace guests
       await supabase.from('guests').delete().eq('reservation_id', id);
       if (reservation.guests.length) {
-        const { error: guestError } = await supabase
-          .from('guests')
-          .insert(
-            reservation.guests.map(g => ({
-              reservation_id: id,
-              name: g.name,
-              age: Number(g.age)
-            }))
-          );
-        if (guestError) throw guestError;
+        await supabase.from('guests').insert(
+          reservation.guests.map(g => ({
+            reservation_id: id,
+            name: g.name,
+            age: Number(g.age)
+          }))
+        );
       }
 
       setMessage('Reservation updated successfully.');
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Update failed.');
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return <p>Loading reservation…</p>;
+  // **5) Render loading / auth states**  
+  if (session === null) return <p className="p-8">Checking authentication…</p>;
+  if (loading)       return <p>Loading reservation…</p>;
 
+  // **6) Actual form UI**  
   return (
     <div className="p-8">
-      <h2 className="text-xl font-semibold mb-4">Edit Reservation #{id}</h2>
-      {error && <p className="text-red-600 mb-2">{error}</p>}
+      <h2 className="text-xl font-bold mb-4">Edit Reservation #{id}</h2>
+      {error   && <p className="text-red-600 mb-2">{error}</p>}
       {message && <p className="text-green-600 mb-2">{message}</p>}
+
       <div className="space-y-4">
+        {/* Site */}
         <div>
           <label>Site</label>
           <input
@@ -154,6 +138,7 @@ export default function EditReservationPage() {
             className="block border p-1 w-full"
           />
         </div>
+
         {/* Dates */}
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -175,6 +160,7 @@ export default function EditReservationPage() {
             />
           </div>
         </div>
+
         {/* Primary Guest */}
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -195,6 +181,7 @@ export default function EditReservationPage() {
             />
           </div>
         </div>
+
         {/* Contact */}
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -215,7 +202,8 @@ export default function EditReservationPage() {
             />
           </div>
         </div>
-        {/* Stay Type */}
+
+        {/* Stay Type & Unit Length */}
         <div>
           <label>Stay Type</label>
           <select
@@ -232,7 +220,6 @@ export default function EditReservationPage() {
             <option value="Cabin">Cabin</option>
           </select>
         </div>
-        {/* Unit Length */}
         {['Travel Trailer','Class A','Class B','Class C'].includes(reservation.stayType) && (
           <div>
             <label>Unit Length (ft)</label>
@@ -244,7 +231,8 @@ export default function EditReservationPage() {
             />
           </div>
         )}
-        {/* Guests */}
+
+        {/* Additional Guests */}
         <div>
           <label className="font-semibold mb-1 block">Additional Guests</label>
           {reservation.guests.map((g, idx) => (
@@ -282,24 +270,26 @@ export default function EditReservationPage() {
             Add Guest
           </button>
         </div>
-        {/* Actions */}
-        <div className="flex gap-2 mt-4">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-          >
-            {saving ? 'Saving…' : 'Save'}
-          </button>
-          <button
-            onClick={() => router.push('/admin')}
-            className="bg-gray-500 text-white px-4 py-2 rounded"
-          >
-            Back to Dashboard
-          </button>
-        </div>
+      </div>
+
+      {/* Save / Back */}
+      <div className="mt-4 flex gap-2">
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+        >
+          {saving ? 'Saving…' : 'Save'}
+        </button>
+        <button
+          onClick={() => router.push('/admin')}
+          className="bg-gray-500 text-white px-4 py-2 rounded"
+        >
+          Back to Dashboard
+        </button>
       </div>
     </div>
   );
 }
+
 
