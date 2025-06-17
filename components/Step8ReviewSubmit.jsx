@@ -4,6 +4,8 @@ const supabase = createClient('https://bwjihwxkudaojlnqvyux.supabase.co', 'eyJhb
 
 export default function Step8ReviewSubmit({ reservation, prevStep }) {
   const handleSubmit = async () => {
+    console.log("Submitting reservation:", reservation);
+
     const { data, error } = await supabase.from('reservations').insert([{
       site_id: reservation.siteId,
       start_date: reservation.startDate,
@@ -15,20 +17,11 @@ export default function Step8ReviewSubmit({ reservation, prevStep }) {
       stay_type: reservation.stayType,
       unit_length: reservation.unitLength ? parseInt(reservation.unitLength) : null,
       guest_count: reservation.guests.length
-    ]]).select();
+    }]);
 
     if (error) {
       console.error('Reservation insert error:', error);
     } else {
-      const reservationId = data[0].id;
-      if (reservation.guests.length > 0) {
-        const guestInserts = reservation.guests.map(g => ({
-          reservation_id: reservationId,
-          name: g.name,
-          age: parseInt(g.age)
-        }));
-        await supabase.from('guests').insert(guestInserts);
-      }
       alert('Reservation submitted!');
     }
   };
