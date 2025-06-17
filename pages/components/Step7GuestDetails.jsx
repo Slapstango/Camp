@@ -1,1 +1,0 @@
-// Loop through guestCount and collect name/age

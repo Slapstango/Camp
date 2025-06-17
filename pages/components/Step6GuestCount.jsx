@@ -1,1 +1,0 @@
-// Numeric input to determine how many guest fields to show

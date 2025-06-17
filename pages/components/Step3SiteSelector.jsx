@@ -1,1 +1,0 @@
-// Placeholder for site selection based on availability
