@@ -33,7 +33,7 @@ export default function Step4GuestInfo({ reservation, setReservation, nextStep, 
 
   return (
     <div>
-      <h2 className=\"text-xl font-bold mb-4\">Step 4: Guest Info for site {String(reservation.siteId)}</h2>
+      <h2 className='text-xl font-bold mb-4'>Step 4: Guest Info for site {String(reservation.siteId)}</h2>
       <label>
         Name:
         <input type="text" name="primaryName" value={reservation.primaryName} onChange={handleChange} className="block border p-1 my-2 w-full" />
