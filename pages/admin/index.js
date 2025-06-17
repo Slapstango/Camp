@@ -6,16 +6,13 @@ import { format, addDays } from 'date-fns';
 
 export default function AdminPage() {
   const router = useRouter();
-  // Auth session state
   const [session, setSession] = useState(undefined);
-  // Search state
   const [search, setSearch] = useState('');
   const [results, setResults] = useState([]);
   const [displayCount, setDisplayCount] = useState(10);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Guard admin routes
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session || session.user.user_metadata?.role !== 'admin') {
@@ -26,7 +23,6 @@ export default function AdminPage() {
     });
   }, [router]);
 
-  // Trigger search
   const handleSearch = async () => {
     setLoading(true);
     setError('');
@@ -44,14 +40,42 @@ export default function AdminPage() {
       if (fetchError) throw fetchError;
       setResults(data || []);
     } catch (err) {
-      console.error('Search error:', err);
       setError(err.message || 'Search failed.');
     } finally {
       setLoading(false);
     }
   };
 
-  // While session check pending
+  const handleCancel = async (id) => {
+    if (!confirm('Really cancel this reservation?')) return;
+    const { error } = await supabase
+      .from('reservations')
+      .delete()
+      .eq('id', id);
+    if (error) {
+      alert('Cancel failed: ' + error.message);
+    } else {
+      setResults(rs => rs.filter(r => r.id !== id));
+    }
+  };
+
+  const handleMarkPaid = async (id) => {
+    const amt = prompt('Enter amount paid (USD):');
+    const num = parseFloat(amt);
+    if (amt === null || isNaN(num)) return;
+    const { error } = await supabase
+      .from('reservations')
+      .update({ payment_collected: true, amount_paid: num })
+      .eq('id', id);
+    if (error) {
+      alert('Mark paid failed: ' + error.message);
+    } else {
+      setResults(rs =>
+        rs.map(r => r.id === id ? { ...r, payment_collected: true, amount_paid: num } : r)
+      );
+    }
+  };
+
   if (session === undefined) {
     return <p className="p-8">Checking authentication…</p>;
   }
@@ -126,31 +150,18 @@ export default function AdminPage() {
                   <td className="border p-2">{r.guests.map(g => g.age).join(', ')}</td>
                   <td className="border p-2">{r.payment_collected ? `Paid $${r.amount_paid}` : 'Unpaid'}</td>
                   <td className="border p-2 space-x-2">
-                    <button
-                      onClick={() => router.push(`/admin/edit?id=${r.id}`)}
-                      className="px-2 py-1 bg-yellow-400 rounded hover:bg-yellow-500"
-                    >
-                      Edit
-                    </button>
+                    <button onClick={() => router.push(`/admin/edit?id=${r.id}`)} className="px-2 py-1 bg-yellow-400 rounded hover:bg-yellow-500">Edit</button>
+                    <button onClick={() => handleCancel(r.id)} className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600">Cancel</button>
+                    <button onClick={() => handleMarkPaid(r.id)} disabled={r.payment_collected} className="px-2 py-1 bg-green-600 text-white rounded disabled:opacity-50">{r.payment_collected ? 'Paid' : 'Mark Paid'}</button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {results.length > displayCount && (
-            <button
-              onClick={() => setDisplayCount(dc => dc + 10)}
-              className="mt-2 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-            >
-              Load More
-            </button>
-          )}
+          {results.length > displayCount && <button onClick={() => setDisplayCount(dc => dc + 10)} className="mt-2 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Load More</button>}
         </div>
       )}
-
-      {!loading && results.length === 0 && (
-        <p className="text-gray-600">No results found.</p>
-      )}
+      {!loading && results.length === 0 && <p className="text-gray-600">No results found.</p>}
     </div>
   );
 }
