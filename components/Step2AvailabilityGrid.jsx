@@ -24,12 +24,14 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
     const { data, error } = await supabase
       .from('reservations')
       .select('site_id, start_date, end_date')
-      .not('end_date', 'lt', reservation.startDate)
-      .not('start_date', 'gt', reservation.endDate);
+      .or(`and(start_date.lte.{reservation.endDate},end_date.gte.{reservation.startDate})`);
 
     if (error) {
+    console.error("Error fetching reservations:", error.message);
       console.error("Error fetching reservations:", error);
-      setAvailableSites([]); return;
+      setAvailableSites([]);
+    setLoading(false);
+    return;
     }
 
     const reserved = new Set(data.map(r => r.site_id));
