@@ -2,29 +2,25 @@ import { useEffect, useState } from 'react';
 import supabase from '../lib/supabaseClient';
 import { format, addDays } from 'date-fns';
 
-// Supabase client moved to shared module
-  'https://bwjihwxkudaojlnqvyux.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' // replace with actual anon key
-);
-
-const reservableSites = ['1M', '2M', '3M', '4M', '5M', '6M', '7M', '17M', '18M', '19M'];
+const reservableSites = [
+  '1M','2M','3M','4M','5M','6M','7M',
+  '17M','18M','19M','C8','C9','76'
+];
 
 export default function CalendarGrid({ startDate, endDate }) {
   const [reservations, setReservations] = useState([]);
 
   useEffect(() => {
     if (startDate && endDate) {
-      fetchReservations();
+      (async () => {
+        const { data, error } = await supabase
+          .from('reservations')
+          .select('site_id, start_date, end_date');
+        if (error) console.error('Error loading reservations', error);
+        else setReservations(data);
+      })();
     }
   }, [startDate, endDate]);
-
-  const fetchReservations = async () => {
-    const { data, error } = await supabase
-      .from('reservations')
-      .select('site_id, start_date, end_date');
-
-    if (!error) setReservations(data);
-  };
 
   const getDates = () => {
     const dates = [];
@@ -37,13 +33,12 @@ export default function CalendarGrid({ startDate, endDate }) {
     return dates;
   };
 
-  const isReserved = (site, date) => {
-    return reservations.some(r => {
-      return r.site_id === site &&
-        new Date(r.start_date) <= date &&
-        new Date(r.end_date) >= date;
-    });
-  };
+  const isReserved = (site, date) =>
+    reservations.some(r =>
+      r.site_id === site &&
+      new Date(r.start_date) <= date &&
+      new Date(r.end_date) >= date
+    );
 
   const dates = getDates();
 
@@ -65,8 +60,13 @@ export default function CalendarGrid({ startDate, endDate }) {
             <tr key={site}>
               <td className="border px-2 py-1 font-bold">{site}</td>
               {dates.map((date, idx) => (
-                <td key={idx} className={`border px-2 py-1 ${isReserved(site, date) ? 'bg-red-200' : 'bg-green-100'}`}>
-                  {isReserved(site, date) ? 'X' : '✓'}
+                <td
+                  key={idx}
+                  className={`border px-2 py-1 ${
+                    isReserved(site, date) ? 'bg-red-200' : 'bg-green-100'
+                  }`}
+                >
+                  {isReserved(site, date) ? 'X' : '✔︎'}
                 </td>
               ))}
             </tr>
