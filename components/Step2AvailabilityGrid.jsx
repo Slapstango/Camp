@@ -20,8 +20,8 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
     const { data, error } = await supabase
       .from('reservations')
       .select('site_id, start_date, end_date')
-      .lte('start_date', reservation.endDate)
-      .gte('end_date', reservation.startDate);
+      .not('end_date', 'lt', reservation.startDate)
+      .not('start_date', 'gt', reservation.endDate);
 
     if (error) {
       console.error("Error fetching reservations:", error.message);
