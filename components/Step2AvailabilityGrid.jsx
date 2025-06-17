@@ -57,15 +57,19 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
               <h3 className="text-lg font-semibold mb-2">Available Options:</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 border border-red-500 p-2">
                 {availableSites.length > 0 ? (
-                  availableSites.map(site => (
-                    <button
-                      key={site}
-                      onClick={() => setSelectedSite(site)}
-                      className={\`p-2 rounded border \${selectedSite === site ? 'bg-blue-400 text-white' : 'bg-green-200 hover:bg-green-300'}\`}
-                    >
-                      {site}
-                    </button>
-                  ))
+                  availableSites.map(site => {
+                    const isSelected = selectedSite === site;
+                    const className = 'p-2 rounded border ' + (isSelected ? 'bg-blue-400 text-white' : 'bg-green-200 hover:bg-green-300');
+                    return (
+                      <button
+                        key={site}
+                        onClick={() => setSelectedSite(site)}
+                        className={className}
+                      >
+                        {site}
+                      </button>
+                    );
+                  })
                 ) : (
                   <p className="text-red-600 col-span-full">No available sites for these dates.</p>
                 )}
