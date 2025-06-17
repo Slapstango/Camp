@@ -58,7 +58,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="1M"
         onClick={() => handleSelect("1M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '80px', left: '120px' }
+        style={{ top: '80px', left: '120px' }}
       >
         1M
       </button>
@@ -67,7 +67,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="2M"
         onClick={() => handleSelect("2M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '110px', left: '170px' }
+        style={{ top: '110px', left: '170px' }}
       >
         2M
       </button>
@@ -76,7 +76,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="3M"
         onClick={() => handleSelect("3M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '140px', left: '220px' }
+        style={{ top: '140px', left: '220px' }}
       >
         3M
       </button>
@@ -85,7 +85,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="4M"
         onClick={() => handleSelect("4M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '170px', left: '270px' }
+        style={{ top: '170px', left: '270px' }}
       >
         4M
       </button>
@@ -94,7 +94,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="5M"
         onClick={() => handleSelect("5M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '200px', left: '320px' }
+        style={{ top: '200px', left: '320px' }}
       >
         5M
       </button>
@@ -103,7 +103,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="6M"
         onClick={() => handleSelect("6M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '230px', left: '370px' }
+        style={{ top: '230px', left: '370px' }}
       >
         6M
       </button>
@@ -112,7 +112,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="7M"
         onClick={() => handleSelect("7M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '260px', left: '420px' }
+        style={{ top: '260px', left: '420px' }}
       >
         7M
       </button>
@@ -121,7 +121,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="17M"
         onClick={() => handleSelect("17M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '300px', left: '100px' }
+        style={{ top: '300px', left: '100px' }}
       >
         17M
       </button>
@@ -130,7 +130,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="18M"
         onClick={() => handleSelect("18M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '330px', left: '150px' }
+        style={{ top: '330px', left: '150px' }}
       >
         18M
       </button>
@@ -139,7 +139,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="19M"
         onClick={() => handleSelect("19M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '360px', left: '200px' }
+        style={{ top: '360px', left: '200px' }}
       >
         19M
       </button>
@@ -160,7 +160,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="1M"
         onClick={() => handleSelect("1M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '80px', left: '120px' }
+        style={{ top: '80px', left: '120px' }}
       >
         1M
       </button>
@@ -169,7 +169,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="2M"
         onClick={() => handleSelect("2M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '110px', left: '170px' }
+        style={{ top: '110px', left: '170px' }}
       >
         2M
       </button>
@@ -178,7 +178,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="3M"
         onClick={() => handleSelect("3M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '140px', left: '220px' }
+        style={{ top: '140px', left: '220px' }}
       >
         3M
       </button>
@@ -187,7 +187,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="4M"
         onClick={() => handleSelect("4M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '170px', left: '270px' }
+        style={{ top: '170px', left: '270px' }}
       >
         4M
       </button>
@@ -196,7 +196,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="5M"
         onClick={() => handleSelect("5M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '200px', left: '320px' }
+        style={{ top: '200px', left: '320px' }}
       >
         5M
       </button>
@@ -205,7 +205,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="6M"
         onClick={() => handleSelect("6M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '230px', left: '370px' }
+        style={{ top: '230px', left: '370px' }}
       >
         6M
       </button>
@@ -214,7 +214,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="7M"
         onClick={() => handleSelect("7M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '260px', left: '420px' }
+        style={{ top: '260px', left: '420px' }}
       >
         7M
       </button>
@@ -223,7 +223,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="17M"
         onClick={() => handleSelect("17M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '300px', left: '100px' }
+        style={{ top: '300px', left: '100px' }}
       >
         17M
       </button>
@@ -232,7 +232,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="18M"
         onClick={() => handleSelect("18M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '330px', left: '150px' }
+        style={{ top: '330px', left: '150px' }}
       >
         18M
       </button>
@@ -241,7 +241,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="19M"
         onClick={() => handleSelect("19M")}
         className="absolute bg-yellow-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-yellow-400"
-        style={ top: '360px', left: '200px' }
+        style={{ top: '360px', left: '200px' }}
       >
         19M
       </button>
@@ -264,7 +264,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="C8"
         onClick={() => handleSelect("C8")}
         className="absolute bg-blue-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-blue-400"
-        style={ top: '400px', left: '300px' }
+        style={{ top: '400px', left: '300px' }}
       >
         C8
       </button>
@@ -273,7 +273,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="C9"
         onClick={() => handleSelect("C9")}
         className="absolute bg-blue-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-blue-400"
-        style={ top: '430px', left: '350px' }
+        style={{ top: '430px', left: '350px' }}
       >
         C9
       </button>
@@ -282,7 +282,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
         key="76"
         onClick={() => handleSelect("76")}
         className="absolute bg-blue-300 border border-black text-xs px-1 py-0.5 rounded hover:bg-blue-400"
-        style={ top: '460px', left: '400px' }
+        style={{ top: '460px', left: '400px' }}
       >
         76
       </button>
