@@ -91,5 +91,5 @@ export default function AdminPage() {
       {error && <p className="text-red-600 mb-4">{error}</p>}
       {/* Results table code */}
     </div>
-  );
+);
 }
