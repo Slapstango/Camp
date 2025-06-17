@@ -2,10 +2,6 @@ import { useEffect, useState } from 'react';
 import supabase from '../lib/supabaseClient';
 import { format, addDays } from 'date-fns';
 
-// Supabase client moved to shared module
-  'https://bwjihwxkudaojlnqvyux.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' // replace with actual anon key
-);
 
 const reservableSites = ['1M', '2M', '3M', '4M', '5M', '6M', '7M', '17M', '18M', '19M'];
 
