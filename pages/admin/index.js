@@ -80,6 +80,8 @@ export default function AdminPage() {
       </div>
 
       {error && <p className="text-red-600 mb-4">{error}</p>}
-      {/* Further results table here */}
+
+      {/* Placeholder for future results table or other content */}
     </div>
+  );
 }
