@@ -1,77 +1,96 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import supabase from '../lib/supabaseClient';
-import { format, addDays } from 'date-fns';
+import CalendarGrid from './CalendarGrid';
 
-const reservableSites = ['1M','2M','3M','4M','5M','6M','7M','17M','18M','19M'];
+const reservableSites = ['1M', '2M', '3M', '4M', '5M', '6M', '7M', '17M', '18M', '19M', 'C8', 'C9', '76'];
 
-export default function Step2AvailabilityGrid({ startDate, endDate, selectedSite, onSelect }) {
-  const [reservations, setReservations] = useState([]);
+export default function Step2AvailabilityGrid({ reservation, setReservation, nextStep, prevStep }) {
+  const [availableSites, setAvailableSites] = useState([]);
+  const [selectedSite, setSelectedSite] = useState(reservation.siteId || '');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (startDate && endDate) {
-      (async () => {
-        const { data, error } = await supabase
-          .from('reservations')
-          .select('site_id, start_date, end_date');
-        if (error) console.error('Error loading reservations', error);
-        else setReservations(data);
-      })();
+    if (reservation.startDate && reservation.endDate) {
+      fetchAvailableSites();
     }
-  }, [startDate, endDate]);
+  }, [reservation.startDate, reservation.endDate]);
 
-  const getDates = () => {
-    const dates = [];
-    let curr = new Date(startDate);
-    const end = new Date(endDate);
-    while (curr <= end) {
-      dates.push(new Date(curr));
-      curr = addDays(curr, 1);
+  const fetchAvailableSites = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('reservations')
+      .select('site_id, start_date, end_date')
+      .not('end_date', 'lt', reservation.startDate)
+      .not('start_date', 'gt', reservation.endDate);
+
+    if (error) {
+      console.error("Error fetching reservations:", error.message);
+      setAvailableSites([]);
+    } else {
+      const reserved = new Set(data.map(r => r.site_id));
+      const filtered = reservableSites.filter(site => !reserved.has(site));
+      setAvailableSites(filtered);
     }
-    return dates;
+    setLoading(false);
   };
 
-  const dates = getDates();
+  const handleSelect = () => {
+    setReservation({ ...reservation, siteId: selectedSite });
+    nextStep();
+  };
 
   return (
-    <div className="overflow-x-auto mb-4">
-      <table className="table-auto border-collapse w-full text-sm">
-        <thead>
-          <tr>
-            <th className="border px-2 py-1 bg-gray-200">Site</th>
-            {dates.map((d,i)=>(
-              <th key={i} className="border px-2 py-1 bg-gray-100">{format(d,'MM/dd')}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {reservableSites.map(site=>(
-            <tr key={site}>
-              <td className="border px-2 py-1 font-bold">{site}</td>
-              {dates.map((date,idx)=>{
-                const r = reservations.find(res =>
-                  res.site_id===site &&
-                  new Date(res.start_date)<=date &&
-                  new Date(res.end_date)>=date
-                );
-                const cellClass = r ? 'bg-red-200' : 'bg-green-100';
-                return (
-                  <td key={idx} className={`border px-2 py-1 ${cellClass}`}>
-                    {r
-                      ? <span className="text-sm text-gray-700">Reserved</span>
-                      : <button
-                          className="text-sm text-blue-600 hover:underline"
-                          onClick={() => onSelect(site)}
-                        >
-                          Select
-                        </button>
-                    }
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div>
+      <h2 className="text-xl font-bold mb-4">Step 2: Select a Site or Cabin</h2>
+      {loading ? (
+        <p>Checking availability...</p>
+      ) : (
+        <>
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="w-full md:w-1/2">
+              <h3 className="text-lg font-semibold mb-2">Campground Map (Reference Only):</h3>
+              <img src="/campground-map.png" alt="Campground Map" className="w-full border" />
+            </div>
+            <div className="w-full md:w-1/2">
+              <h3 className="text-lg font-semibold mb-2">Available Options:</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-2">
+                {availableSites.length > 0 ? (
+                  availableSites.map(site => {
+                    const isSelected = selectedSite === site;
+                    const className = \`p-2 rounded border \${isSelected ? 'bg-blue-400 text-white' : 'bg-green-200 hover:bg-green-300'}\`;
+                    return (
+                      <button
+                        key={site}
+                        onClick={() => setSelectedSite(site)}
+                        className={className}
+                      >
+                        {site}
+                      </button>
+                    );
+                  })
+                ) : (
+                  <p className="text-red-600 col-span-full">No available sites for these dates.</p>
+                )}
+              </div>
+              <button
+                onClick={handleSelect}
+                disabled={!selectedSite}
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <h3 className="text-lg font-semibold mb-2">Calendar Grid:</h3>
+            <CalendarGrid startDate={reservation.startDate} endDate={reservation.endDate} />
+          </div>
+        </>
+      )}
+      <div className="mt-6">
+        <button onClick={prevStep} className="px-4 py-2 bg-gray-500 text-white rounded">Back</button>
+      </div>
     </div>
   );
 }
