@@ -1,58 +1,55 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 export default function Step1DateSelector({ reservation, setReservation, nextStep }) {
-  // Local state for the two pickers:
+  // **Local** state to batch the two date inputs together
   const [localDates, setLocalDates] = useState({
     startDate: reservation.startDate || '',
     endDate:   reservation.endDate   || '',
   });
 
   const handleChange = (e) => {
-    setLocalDates(d => ({
-      ...d,
-      [e.target.name]: e.target.value,
-    }));
+    const { name, value } = e.target;
+    setLocalDates((d) => ({ ...d, [name]: value }));
   };
 
   const handleNext = () => {
-    // 1) Commit both dates into the shared "reservation" state
-    setReservation(r => ({
+    // 1️⃣ Commit both dates at once
+    setReservation((r) => ({
       ...r,
       startDate: localDates.startDate,
       endDate:   localDates.endDate,
     }));
-    // 2) Then advance the step
+    // 2️⃣ Then move to step 2
     nextStep();
   };
-console.log('🔷 Current reservation:', reservation);
 
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Step 1: Select Dates</h2>
-      <label>
+      <label className="block mb-2">
         Start Date:
         <input
           type="date"
           name="startDate"
           value={localDates.startDate}
           onChange={handleChange}
-          className="block border p-1 my-2"
+          className="block border p-1 my-2 w-full"
         />
       </label>
-      <label>
+      <label className="block mb-4">
         End Date:
         <input
           type="date"
           name="endDate"
           value={localDates.endDate}
           onChange={handleChange}
-          className="block border p-1 my-2"
+          className="block border p-1 my-2 w-full"
         />
       </label>
       <button
         onClick={handleNext}
         disabled={!localDates.startDate || !localDates.endDate}
-        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+        className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
       >
         Next
       </button>
