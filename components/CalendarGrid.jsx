@@ -4,6 +4,7 @@ import { format, addDays } from 'date-fns';
 
 const reservableSites = [
   '1M','2M','3M','4M','5M','6M','7M',
+  '17M','18M','19M','4M','5M','6M','7M',
   '17M','18M','19M','C8','C9','76'
 ];
 
@@ -79,6 +80,4 @@ export default function CalendarGrid({ startDate, endDate, onView }) {
         </tbody>
       </table>
     </div>
-  );
-}
-
+); }
