@@ -24,6 +24,7 @@ export default function Step1DateSelector({ reservation, setReservation, nextSte
     // 2) Then advance the step
     nextStep();
   };
+console.log('🔷 Current reservation:', reservation);
 
   return (
     <div>
