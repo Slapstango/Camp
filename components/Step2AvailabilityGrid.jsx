@@ -12,6 +12,8 @@ export default function Step2AvailabilityGrid({ reservation = {}, setReservation
   useEffect(() => {
     if (reservation.startDate && reservation.endDate) {
       fetchAvailableSites();
+    } else {
+      setLoading(false);
     }
   }, [reservation.startDate, reservation.endDate]);
 
