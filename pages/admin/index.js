@@ -122,7 +122,7 @@ export default function AdminPage() {
       </div>
 
       {error && <p className="text-red-600 mb-4">{error}</p>}
-      {/* ...rest of the results table... */}
+      {/* ...results table... */}
     </div>
 );
 }
