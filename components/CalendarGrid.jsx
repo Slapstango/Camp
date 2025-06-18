@@ -81,3 +81,4 @@ export default function CalendarGrid({ startDate, endDate, onView }) {
     </div>
   );
 }
+
