@@ -7,7 +7,7 @@ const reservableSites = [
   '17M','18M','19M','C8','C9','76'
 ];
 
-export default function CalendarGrid({ startDate, endDate }) {
+export default function CalendarGrid({ startDate, endDate, onView }) {
   const [reservations, setReservations] = useState([]);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function CalendarGrid({ startDate, endDate }) {
       (async () => {
         const { data, error } = await supabase
           .from('reservations')
-          .select('site_id, start_date, end_date');
+          .select('id, site_id, start_date, end_date');
         if (error) console.error('Error loading reservations', error);
         else setReservations(data);
       })();
@@ -33,17 +33,10 @@ export default function CalendarGrid({ startDate, endDate }) {
     return dates;
   };
 
-  const isReserved = (site, date) =>
-    reservations.some(r =>
-      r.site_id === site &&
-      new Date(r.start_date) <= date &&
-      new Date(r.end_date) >= date
-    );
-
   const dates = getDates();
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto mb-4">
       <table className="table-auto border-collapse w-full text-sm">
         <thead>
           <tr>
@@ -59,16 +52,28 @@ export default function CalendarGrid({ startDate, endDate }) {
           {reservableSites.map(site => (
             <tr key={site}>
               <td className="border px-2 py-1 font-bold">{site}</td>
-              {dates.map((date, idx) => (
-                <td
-                  key={idx}
-                  className={`border px-2 py-1 ${
-                    isReserved(site, date) ? 'bg-red-200' : 'bg-green-100'
-                  }`}
-                >
-                  {isReserved(site, date) ? 'X' : '✔︎'}
-                </td>
-              ))}
+              {dates.map((date, idx) => {
+                const resObj = reservations.find(r =>
+                  r.site_id === site &&
+                  new Date(r.start_date) <= date &&
+                  new Date(r.end_date) >= date
+                );
+                const cellClass = resObj ? 'bg-red-200' : 'bg-green-100';
+                return (
+                  <td key={idx} className={`border px-2 py-1 ${cellClass}`}>
+                    {resObj
+                      ? onView
+                        ? <button
+                            className="text-sm text-blue-600 hover:underline"
+                            onClick={() => onView(resObj.id)}
+                          >
+                            View
+                          </button>
+                        : <span className="text-sm text-gray-700">Reserved</span>
+                      : null}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>
