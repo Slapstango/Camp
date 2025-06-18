@@ -1,33 +1,33 @@
 import React, { useState } from 'react';
 
 export default function Step1DateSelector({ reservation, setReservation, nextStep }) {
-  // Local state for the two pickers:
+  // Local state for the two date inputs
   const [localDates, setLocalDates] = useState({
     startDate: reservation.startDate || '',
     endDate:   reservation.endDate   || '',
   });
 
+  // Update local only
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setLocalDates((d) => ({
+    setLocalDates(d => ({
       ...d,
       [name]: value,
     }));
   };
 
+  // When you click Next, push both into parent state then advance
   const handleNext = () => {
-    // 1) Commit both dates at once
-    setReservation((r) => ({
+    setReservation(r => ({
       ...r,
       startDate: localDates.startDate,
       endDate:   localDates.endDate,
     }));
-    // 2) Then move to step 2
     nextStep();
   };
 
   return (
-    <div>
+    <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Step 1: Select Dates</h2>
 
       <label className="block mb-2">
@@ -37,7 +37,7 @@ export default function Step1DateSelector({ reservation, setReservation, nextSte
           name="startDate"
           value={localDates.startDate}
           onChange={handleChange}
-          className="block border p-1 my-2 w-full"
+          className="block border p-2 w-full"
         />
       </label>
 
@@ -48,18 +48,17 @@ export default function Step1DateSelector({ reservation, setReservation, nextSte
           name="endDate"
           value={localDates.endDate}
           onChange={handleChange}
-          className="block border p-1 my-2 w-full"
+          className="block border p-2 w-full"
         />
       </label>
 
       <button
         onClick={handleNext}
         disabled={!localDates.startDate || !localDates.endDate}
-        className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
       >
         Next
       </button>
     </div>
   );
 }
-
