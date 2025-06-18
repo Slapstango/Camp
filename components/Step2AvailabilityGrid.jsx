@@ -4,7 +4,7 @@ import CalendarGrid from './CalendarGrid';
 
 const reservableSites = ['1M', '2M', '3M', '4M', '5M', '6M', '7M', '17M', '18M', '19M', 'C8', 'C9', '76'];
 
-export default function Step2AvailabilityGrid({ reservation = {},  reservation, setReservation, nextStep, prevStep }) {
+export default function Step2AvailabilityGrid({ reservation = {}, setReservation, nextStep, prevStep }) {
   const [availableSites, setAvailableSites] = useState([]);
   const [selectedSite, setSelectedSite] = useState(reservation.siteId || '');
   const [loading, setLoading] = useState(true);
