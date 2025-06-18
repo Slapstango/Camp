@@ -61,14 +61,16 @@ export default function CalendarGrid({ startDate, endDate, onView }) {
                 const cellClass = resObj ? 'bg-red-200' : 'bg-green-100';
                 return (
                   <td key={idx} className={`border px-2 py-1 ${cellClass}`}>
-                    {resObj && onView && (
-                      <button
-                        className="text-sm text-blue-600 hover:underline"
-                        onClick={() => onView(resObj.id)}
-                      >
-                        View
-                      </button>
-                    )}
+                    {resObj
+                      ? onView
+                        ? <button
+                            className="text-sm text-blue-600 hover:underline"
+                            onClick={() => onView(resObj.id)}
+                          >
+                            View
+                          </button>
+                        : <span className="text-sm text-gray-700">Reserved</span>
+                      : null}
                   </td>
                 );
               })}
@@ -77,5 +79,5 @@ export default function CalendarGrid({ startDate, endDate, onView }) {
         </tbody>
       </table>
     </div>
-);
+  );
 }
