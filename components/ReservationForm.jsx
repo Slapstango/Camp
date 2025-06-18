@@ -11,9 +11,9 @@ import Step8ReviewSubmit from './Step8ReviewSubmit';
 export default function ReservationForm() {
   const [step, setStep] = useState(1);
   const [reservation, setReservation] = useState({
-    startDate: '',
-    endDate: '',
-    siteId: '',
+    startDate: null,
+    endDate: null,
+    siteId: null,
     primaryName: '',
     phone: '',
     email: '',
