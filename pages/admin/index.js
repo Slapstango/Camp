@@ -13,7 +13,6 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Auth guard
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session || session.user.user_metadata?.role !== 'admin') {
@@ -53,11 +52,8 @@ export default function AdminPage() {
       .from('reservations')
       .delete()
       .eq('id', id);
-    if (error) {
-      alert('Cancel failed: ' + error.message);
-    } else {
-      setResults(rs => rs.filter(r => r.id !== id));
-    }
+    if (error) alert('Cancel failed: ' + error.message);
+    else setResults(rs => rs.filter(r => r.id !== id));
   };
 
   const handleMarkPaid = async (id) => {
@@ -68,18 +64,11 @@ export default function AdminPage() {
       .from('reservations')
       .update({ payment_collected: true, amount_paid: num })
       .eq('id', id);
-    if (error) {
-      alert('Mark paid failed: ' + error.message);
-    } else {
-      setResults(rs =>
-        rs.map(r => r.id === id ? { ...r, payment_collected: true, amount_paid: num } : r)
-      );
-    }
+    if (error) alert('Mark paid failed: ' + error.message);
+    else setResults(rs => rs.map(r => r.id === id ? { ...r, payment_collected: true, amount_paid: num } : r));
   };
 
-  if (session === undefined) {
-    return <p className="p-8">Checking authentication…</p>;
-  }
+  if (session === undefined) return <p className="p-8">Checking authentication…</p>;
 
   const today = new Date();
   const startDate = format(today, 'yyyy-MM-dd');
@@ -148,15 +137,25 @@ export default function AdminPage() {
                     <button onClick={() => router.push(`/admin/edit?id=${r.id}`)} className="px-2 py-1 bg-yellow-400 rounded">Edit</button>
                     <button onClick={() => handleCancel(r.id)} className="px-2 py-1 bg-red-500 text-white rounded">Cancel</button>
                     <button onClick={() => handleMarkPaid(r.id)} disabled={r.payment_collected} className="px-2 py-1 bg-green-600 text-white rounded">{r.payment_collected ? 'Paid' : 'Mark Paid'}</button>
-                  </tr>
-                ))}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       ) : (
         <p className="text-gray-600">No results found.</p>
       )}
-      {results.length > displayCount && <button onClick={() => setDisplayCount(dc => dc + 10)} className="mt-2 px-4 py-2 bg-gray-200 rounded">Load More</button>}
+      {results.length > displayCount && (
+        <button
+          onClick={() => setDisplayCount(dc => dc + 10)}
+          className="mt-2 px-4 py-2 bg-gray-200 rounded"
+        >
+          Load More
+        </button>
+      )}
     </div>
   );
 }
+```
+
