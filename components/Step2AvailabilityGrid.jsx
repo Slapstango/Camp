@@ -86,7 +86,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
 
           <div className="mt-8">
             <h3 className="text-lg font-semibold mb-2">Calendar Grid:</h3>
-            <CalendarGrid startDate={reservation.startDate} endDate={reservation.endDate} />
+            <CalendarGrid startDate={userStart} endDate={userEnd} />
           </div>
         </>
       )}
