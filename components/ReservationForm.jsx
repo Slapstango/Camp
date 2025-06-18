@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Step1DateSelector from './Step1DateSelector';
 import Step2AvailabilityGrid from './Step2AvailabilityGrid';
-import Step3SiteSelector from './Step3SiteSelector';
 import Step4GuestInfo from './Step4GuestInfo';
 import Step5UnitLength from './Step5UnitLength';
 import Step6GuestCount from './Step6GuestCount';
@@ -14,77 +13,29 @@ export default function ReservationForm() {
     startDate: '',
     endDate: '',
     siteId: '',
+    primaryName: '',
+    phone: '',
+    email: '',
+    age: '',
+    stayType: '',
     unitLength: '',
-    guestCount: '',
-    guestDetails: {}
+    guestCount: 0,
+    guests: [],
   });
 
-  const nextStep = () => setStep(prev => prev + 1);
-  const prevStep = () => setStep(prev => prev - 1);
+  const nextStep = () => setStep(step + 1);
+  const prevStep = () => setStep(step - 1);
 
   return (
     <div className="p-4 max-w-xl mx-auto bg-white shadow rounded">
-      {step === 1 && (
-        <Step1DateSelector
-          reservation={reservation}
-          setReservation={setReservation}
-          nextStep={nextStep}
-        />
-      )}
-      {step === 2 && (
-        <Step2AvailabilityGrid
-          reservation={reservation}
-          setReservation={setReservation}
-          nextStep={nextStep}
-          prevStep={prevStep}
-        />
-      )}
-      {step === 3 && (
-        <Step3SiteSelector
-          reservation={reservation}
-          setReservation={setReservation}
-          nextStep={nextStep}
-          prevStep={prevStep}
-        />
-      )}
-      {step === 4 && (
-        <Step4GuestInfo
-          reservation={reservation}
-          setReservation={setReservation}
-          nextStep={nextStep}
-          prevStep={prevStep}
-        />
-      )}
-      {step === 5 && (
-        <Step5UnitLength
-          reservation={reservation}
-          setReservation={setReservation}
-          nextStep={nextStep}
-          prevStep={prevStep}
-        />
-      )}
-      {step === 6 && (
-        <Step6GuestCount
-          reservation={reservation}
-          setReservation={setReservation}
-          nextStep={nextStep}
-          prevStep={prevStep}
-        />
-      )}
-      {step === 7 && (
-        <Step7GuestDetails
-          reservation={reservation}
-          setReservation={setReservation}
-          nextStep={nextStep}
-          prevStep={prevStep}
-        />
-      )}
-      {step === 8 && (
-        <Step8ReviewSubmit
-          reservation={reservation}
-          prevStep={prevStep}
-        />
-      )}
+      {step === 1 && <Step1DateSelector reservation={reservation} setReservation={setReservation} nextStep={nextStep} />}
+      {step === 2 && <Step2AvailabilityGrid reservation={reservation} setReservation={setReservation} nextStep={nextStep} prevStep={prevStep} />}
+      
+      {step === 3 && <Step4GuestInfo reservation={reservation} setReservation={setReservation} nextStep={nextStep} prevStep={prevStep} />}
+      {step === 4 && <Step5UnitLength reservation={reservation} setReservation={setReservation} nextStep={nextStep} prevStep={prevStep} />}
+      {step === 5 && <Step6GuestCount reservation={reservation} setReservation={setReservation} nextStep={nextStep} prevStep={prevStep} />}
+      {step === 6 && <Step7GuestDetails reservation={reservation} setReservation={setReservation} nextStep={nextStep} prevStep={prevStep} />}
+      {step === 7 && <Step8ReviewSubmit reservation={reservation} prevStep={prevStep} />}
     </div>
   );
 }

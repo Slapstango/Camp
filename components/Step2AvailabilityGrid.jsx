@@ -4,7 +4,7 @@ import CalendarGrid from './CalendarGrid';
 
 const reservableSites = ['1M', '2M', '3M', '4M', '5M', '6M', '7M', '17M', '18M', '19M', 'C8', 'C9', '76'];
 
-export default function Step2AvailabilityGrid({ reservation, setReservation, nextStep, prevStep }) {
+export default function Step2AvailabilityGrid({ reservation = {},  reservation, setReservation, nextStep, prevStep }) {
   const [availableSites, setAvailableSites] = useState([]);
   const [selectedSite, setSelectedSite] = useState(reservation.siteId || '');
   const [loading, setLoading] = useState(true);
@@ -57,7 +57,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
                 {availableSites.length > 0 ? (
                   availableSites.map(site => {
                     const isSelected = selectedSite === site;
-                    const className = `p-2 rounded border ${isSelected ? 'bg-blue-400 text-white' : 'bg-green-200 hover:bg-green-300'}`;
+                    const className = 'p-2 rounded border ' + (isSelected ? 'bg-blue-400 text-white' : 'bg-green-200 hover:bg-green-300');
                     return (
                       <button
                         key={site}
