@@ -2,14 +2,24 @@ import { useEffect, useState } from 'react';
 import supabase from '../lib/supabaseClient';
 import CalendarGrid from './CalendarGrid';
 
-const reservableSites = ['1M', '2M', '3M', '4M', '5M', '6M', '7M', '17M', '18M', '19M', 'C8', 'C9', '76'];
-
-export default function Step2AvailabilityGrid({ reservation = {}, setReservation, nextStep, prevStep }) {
+export default function Step2AvailabilityGrid({
+  reservation = {},
+  setReservation,
+  nextStep,
+  prevStep,
+}) {
   const [availableSites, setAvailableSites] = useState([]);
   const [selectedSite, setSelectedSite] = useState(reservation.siteId || '');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log(
+      '%c[Step2] Checking availability for:',
+      'color: teal; font-weight: bold;',
+      reservation.startDate,
+      reservation.endDate
+    );
+
     if (reservation.startDate && reservation.endDate) {
       fetchAvailableSites();
     } else {
@@ -18,81 +28,43 @@ export default function Step2AvailabilityGrid({ reservation = {}, setReservation
   }, [reservation.startDate, reservation.endDate]);
 
   const fetchAvailableSites = async () => {
+    console.log(
+      '%c[Step2] Fetching existing reservations…',
+      'color: purple; font-weight: bold;'
+    );
+
     setLoading(true);
+
     const { data, error } = await supabase
       .from('reservations')
       .select('site_id, start_date, end_date')
       .not('end_date', 'lt', reservation.startDate)
       .not('start_date', 'gt', reservation.endDate);
 
+    console.log(
+      '%c[Step2] Fetched reservations:',
+      'color: purple;',
+      data,
+      'error:',
+      error
+    );
+
     if (error) {
-      console.error('Error fetching reservations:', error.message);
+      console.error('%c[Step2] Error fetching reservations:', 'color: red;', error);
       setAvailableSites([]);
     } else {
-      const reserved = new Set(data.map(r => r.site_id));
-      const filtered = reservableSites.filter(site => !reserved.has(site));
+      const reserved = new Set(data.map((r) => r.site_id));
+      const filtered = reservableSites.filter((site) => !reserved.has(site));
+      console.log(
+        '%c[Step2] Available sites after filter:',
+        'color: green;',
+        filtered
+      );
       setAvailableSites(filtered);
     }
+
     setLoading(false);
   };
 
-  const handleSelect = () => {
-    setReservation({ ...reservation, siteId: selectedSite });
-    nextStep();
-  };
-
-  return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">Step 2: Select a Site or Cabin</h2>
-      {loading ? (
-        <p>Checking availability...</p>
-      ) : (
-        <>
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="w-full md:w-1/2">
-              <h3 className="text-lg font-semibold mb-2">Campground Map (Reference Only):</h3>
-              <img src="/campground-map.png" alt="Campground Map" className="w-full border" />
-            </div>
-            <div className="w-full md:w-1/2">
-              <h3 className="text-lg font-semibold mb-2">Available Options:</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-2">
-                {availableSites.length > 0 ? (
-                  availableSites.map(site => {
-                    const isSelected = selectedSite === site;
-                    const className = 'p-2 rounded border ' + (isSelected ? 'bg-blue-400 text-white' : 'bg-green-200 hover:bg-green-300');
-                    return (
-                      <button
-                        key={site}
-                        onClick={() => setSelectedSite(site)}
-                        className={className}
-                      >
-                        {site}
-                      </button>
-                    );
-                  })
-                ) : (
-                  <p className="text-red-600 col-span-full">No available sites for these dates.</p>
-                )}
-              </div>
-              <button
-                onClick={handleSelect}
-                disabled={!selectedSite}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
-              >
-                Continue
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-2">Calendar Grid:</h3>
-            <CalendarGrid startDate={reservation.startDate} endDate={reservation.endDate} />
-          </div>
-        </>
-      )}
-      <div className="mt-6">
-        <button onClick={prevStep} className="px-4 py-2 bg-gray-500 text-white rounded">Back</button>
-      </div>
-    </div>
-  );
+  // …rest of your render
 }
