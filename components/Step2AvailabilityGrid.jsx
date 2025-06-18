@@ -24,7 +24,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
       .not('start_date', 'gt', reservation.endDate);
 
     if (error) {
-      console.error("Error fetching reservations:", error.message);
+      console.error('Error fetching reservations:', error.message);
       setAvailableSites([]);
     } else {
       const reserved = new Set(data.map(r => r.site_id));
@@ -57,7 +57,7 @@ export default function Step2AvailabilityGrid({ reservation, setReservation, nex
                 {availableSites.length > 0 ? (
                   availableSites.map(site => {
                     const isSelected = selectedSite === site;
-                    const className = \`p-2 rounded border \${isSelected ? 'bg-blue-400 text-white' : 'bg-green-200 hover:bg-green-300'}\`;
+                    const className = 'p-2 rounded border ' + (isSelected ? 'bg-blue-400 text-white' : 'bg-green-200 hover:bg-green-300');
                     return (
                       <button
                         key={site}
